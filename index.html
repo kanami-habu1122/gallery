@@ -272,7 +272,7 @@
       tile.className = "tile";
       var img = document.createElement("img");
       img.loading = "lazy";
-      img.src = p.src;
+      img.src = p.thumb || p.src;   // 一覧は軽いサムネイルを使う
       img.alt = p.title || "photo";
       tile.appendChild(img);
 

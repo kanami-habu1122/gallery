@@ -1,0 +1,12 @@
+{
+  "name": "gallery-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build script for the photo gallery (generates photos.js and optimized images).",
+  "scripts": {
+    "build": "node scripts/build-photos.js"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5"
+  }
+}
