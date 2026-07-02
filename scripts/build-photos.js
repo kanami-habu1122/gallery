@@ -19,6 +19,7 @@ const ROOT = path.join(__dirname, "..");
 const CATEGORIES = [
   { dir: "photos/stage", tag: "Stage" },
   { dir: "photos/signing", tag: "Signing" },
+  { dir: "photos/other", tag: "Other" },
 ];
 
 const IMAGE_EXT = /\.(jpe?g|png|webp|gif|avif|svg)$/i;

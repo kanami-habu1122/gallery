@@ -13,6 +13,7 @@
 photos/
   stage/     ← ステージの写真を入れる（カテゴリ "Stage"）
   signing/   ← サイン会の写真を入れる（カテゴリ "Signing"）
+  other/     ← その他の写真を入れる（カテゴリ "Other"）
 ```
 
 1. 写真ファイル（`.jpg` / `.png` / `.webp` など）を、対応するフォルダに入れる
@@ -55,6 +56,7 @@ node scripts/build-photos.js
 | `index.html` | ギャラリー本体（レイアウト・ライトボックス・追加機能） |
 | `photos/stage/` | ステージの写真を入れる（カテゴリ Stage） |
 | `photos/signing/` | サイン会の写真を入れる（カテゴリ Signing） |
+| `photos/other/` | その他の写真を入れる（カテゴリ Other） |
 | `photos.js` | 写真リスト（**自動生成・手編集しない**） |
 | `scripts/build-photos.js` | フォルダから `photos.js` を作る生成スクリプト |
 | `.github/workflows/build-photos.yml` | push 時に自動生成する GitHub Actions |

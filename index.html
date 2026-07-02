@@ -110,9 +110,11 @@
   .btn-clear:hover{color:var(--text);border-color:var(--muted)}
 
   /* ---------- LIGHTBOX ---------- */
-  .lb{position:fixed;inset:0;z-index:60;background:rgba(8,8,11,.96);display:none;align-items:center;justify-content:center}
+  .lb{position:fixed;inset:0;z-index:60;background:rgba(8,8,11,.96);display:none;align-items:center;justify-content:center;overflow:hidden}
   .lb.open{display:flex}
-  .lb img{max-width:92vw;max-height:82vh;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .lb img{position:relative;z-index:1;max-width:92vw;max-height:82vh;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,.6);cursor:zoom-in;transition:transform .25s ease}
+  .lb img.zoomed{cursor:zoom-out;transition:transform-origin 0s;border-radius:0}
+  .lb-count,.lb-close,.lb-btn,.lb-cap{z-index:2}
   .lb-cap{position:absolute;bottom:26px;left:0;right:0;text-align:center}
   .lb-cap .t{font-family:var(--display);font-size:1.6rem}
   .lb-cap .g{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-top:4px}
@@ -229,10 +231,16 @@
 
   function allPhotos(){ return base.concat(userPhotos); }
 
+  // 常に表示しておくカテゴリ（写真が0枚でもボタンを出す）
+  var FIXED_TAGS = ["Stage", "Signing", "Other"];
+
   function uniqueTags(){
-    var set = {};
-    allPhotos().forEach(function(p){ if(p.tag) set[p.tag] = true; });
-    return Object.keys(set);
+    // まず固定カテゴリ、そのあとに写真から見つかった未知のカテゴリ（例: your photo）
+    var tags = FIXED_TAGS.slice();
+    allPhotos().forEach(function(p){
+      if(p.tag && tags.indexOf(p.tag) === -1) tags.push(p.tag);
+    });
+    return tags;
   }
 
   function renderFilters(){
@@ -299,23 +307,53 @@
   var lbTag = document.getElementById("lbTag");
   var lbCount = document.getElementById("lbCount");
   var lbIndex = 0;
+  var ZOOM = 2.6;
+  var zoomed = false;
 
   function openLightbox(i){
     lbIndex = i; showLightbox(); lb.classList.add("open"); lb.setAttribute("aria-hidden","false");
     document.body.style.overflow = "hidden";
   }
   function closeLightbox(){
+    resetZoom();
     lb.classList.remove("open"); lb.setAttribute("aria-hidden","true");
     document.body.style.overflow = "";
   }
-  function step(d){ lbIndex = (lbIndex + d + current.length) % current.length; showLightbox(); }
+  function step(d){ resetZoom(); lbIndex = (lbIndex + d + current.length) % current.length; showLightbox(); }
   function showLightbox(){
     var p = current[lbIndex]; if(!p) return;
+    resetZoom();
     lbImg.src = p.src; lbImg.alt = p.title || "photo";
     lbTitle.textContent = p.title || "";
     lbTag.textContent = p.tag || "";
     lbCount.textContent = (lbIndex+1) + " / " + current.length;
   }
+
+  function resetZoom(){
+    zoomed = false;
+    lbImg.classList.remove("zoomed");
+    lbImg.style.transform = "";
+    lbImg.style.transformOrigin = "center center";
+  }
+  function setOrigin(e){
+    var r = lbImg.getBoundingClientRect();
+    var x = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+    var y = Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100));
+    lbImg.style.transformOrigin = x + "% " + y + "%";
+  }
+  lbImg.addEventListener("click", function(e){
+    e.stopPropagation();
+    zoomed = !zoomed;
+    if(zoomed){
+      setOrigin(e);
+      lbImg.classList.add("zoomed");
+      lbImg.style.transform = "scale(" + ZOOM + ")";
+    } else {
+      resetZoom();
+    }
+  });
+  lbImg.addEventListener("mousemove", function(e){ if(zoomed) setOrigin(e); });
+
   document.getElementById("lbClose").addEventListener("click", closeLightbox);
   document.getElementById("lbPrev").addEventListener("click", function(e){ e.stopPropagation(); step(-1); });
   document.getElementById("lbNext").addEventListener("click", function(e){ e.stopPropagation(); step(1); });
