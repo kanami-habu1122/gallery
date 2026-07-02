@@ -1,0 +1,14 @@
+# GitHub Pages (Jekyll) build config.
+#
+# The site only serves the optimized images under cache/. The full-resolution
+# originals in photos/ stay in the repo (scripts/build-photos.js regenerates
+# cache/ from them in CI) but must NOT be published — including ~85MB of unused
+# originals made the Pages deploy time out ("Timeout reached, aborting!").
+# Excluding them keeps the published artifact small and the deploy fast.
+exclude:
+  - photos
+  - scripts
+  - package.json
+  - package-lock.json
+  - node_modules
+  - README.md
