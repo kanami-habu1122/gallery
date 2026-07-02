@@ -9,4 +9,6 @@ window.PHOTOS = [
   { src: "cache/large/stage/20260613_JUST B.jpg", thumb: "cache/thumb/stage/20260613_JUST B.jpg", title: "20260613 JUST B", tag: "Stage" },
   { src: "cache/large/signing/20260531_MADEIN_MASHIRO.jpg", thumb: "cache/thumb/signing/20260531_MADEIN_MASHIRO.jpg", title: "20260531 MADEIN MASHIRO", tag: "Signing" },
   { src: "cache/large/signing/20260531_MADEIN_SERINA.jpg", thumb: "cache/thumb/signing/20260531_MADEIN_SERINA.jpg", title: "20260531 MADEIN SERINA", tag: "Signing" },
+  { src: "cache/large/other/20260627_JUST B_GEONU1.jpg", thumb: "cache/thumb/other/20260627_JUST B_GEONU1.jpg", title: "20260627 JUST B GEONU1", tag: "Other" },
+  { src: "cache/large/other/20260627_JUST B_GEONU2.jpg", thumb: "cache/thumb/other/20260627_JUST B_GEONU2.jpg", title: "20260627 JUST B GEONU2", tag: "Other" },
 ];
