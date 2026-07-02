@@ -1,0 +1,45 @@
+name: Build photo list
+
+# photos/stage・photos/signing に画像を追加して push すると、
+# photos.js を自動で作り直してコミットします。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "photos/**"
+      - "scripts/build-photos.js"
+      - ".github/workflows/build-photos.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-photos
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate photos.js
+        run: node scripts/build-photos.js
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain photos.js)" ]; then
+            git add photos.js
+            git commit -m "chore: regenerate photos.js [skip ci]"
+            git push
+          else
+            echo "photos.js is already up to date."
+          fi
