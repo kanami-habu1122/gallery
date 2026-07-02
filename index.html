@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Habu Photography</title>
+<meta name="description" content="Habu が撮影した写真のギャラリー。ライブ・ポートレートを中心に展示しています。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0d10;
+    --bg-soft:#16161c;
+    --line:#2a2a33;
+    --text:#f2f0ec;
+    --muted:#9a978f;
+    --accent:#e9c46a;
+    --display:'Cormorant Garamond',serif;
+    --body:'Inter',sans-serif;
+    --mono:'Space Mono',monospace;
+    --maxw:1400px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  img{display:block;max-width:100%}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+  .mono{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- HEADER ---------- */
+  header{position:sticky;top:0;z-index:30;background:rgba(13,13,16,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{font-family:var(--display);font-size:1.6rem;font-weight:600;letter-spacing:.02em;text-decoration:none}
+  .brand em{color:var(--accent);font-style:normal}
+  .nav-right{display:flex;align-items:center;gap:22px}
+  .nav-right a{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted);transition:color .2s}
+  .nav-right a:hover{color:var(--text)}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:clamp(60px,10vw,130px) 0 clamp(36px,5vw,64px);text-align:center}
+  .hero .mono{display:block;margin-bottom:20px}
+  .hero h1{font-family:var(--display);font-weight:500;font-size:clamp(2.8rem,9vw,6.5rem);line-height:1;letter-spacing:.01em}
+  .hero h1 em{color:var(--accent);font-style:italic}
+  .hero p{max-width:52ch;margin:26px auto 0;color:var(--muted);font-size:clamp(1rem,2vw,1.15rem)}
+
+  /* ---------- FILTERS ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:0 auto clamp(30px,5vw,56px);padding-top:8px}
+  .filter{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;
+    padding:9px 18px;cursor:pointer;transition:all .2s;
+  }
+  .filter:hover{color:var(--text);border-color:var(--muted)}
+  .filter[aria-pressed="true"]{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+
+  /* ---------- MASONRY ---------- */
+  .masonry{columns:4 300px;column-gap:20px;padding-bottom:60px}
+  .tile{
+    break-inside:avoid;margin:0 0 20px;position:relative;overflow:hidden;border-radius:6px;
+    cursor:pointer;background:var(--bg-soft);
+    opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;
+  }
+  .tile.in{opacity:1;transform:none}
+  .tile img{width:100%;height:auto;transition:transform .6s ease,filter .6s ease;filter:saturate(.92)}
+  .tile:hover img{transform:scale(1.05);filter:saturate(1.08)}
+  .tile .cap{
+    position:absolute;inset:auto 0 0 0;padding:26px 16px 14px;
+    background:linear-gradient(to top,rgba(0,0,0,.72),transparent);
+    opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;
+  }
+  .tile:hover .cap{opacity:1;transform:none}
+  .tile .cap .t{font-family:var(--display);font-size:1.35rem;line-height:1.1}
+  .tile .cap .g{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .tile .badge{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:var(--bg);padding:3px 8px;border-radius:999px}
+
+  .empty{text-align:center;color:var(--muted);padding:60px 0;font-family:var(--mono);font-size:.8rem;letter-spacing:.1em}
+
+  /* ---------- ADD PHOTOS (client-side demo) ---------- */
+  #add{border-top:1px solid var(--line);padding:clamp(50px,8vw,90px) 0}
+  .add-head{text-align:center;margin-bottom:34px}
+  .add-head h2{font-family:var(--display);font-weight:500;font-size:clamp(2rem,5vw,3.2rem);line-height:1.05}
+  .add-head p{color:var(--muted);max-width:56ch;margin:14px auto 0;font-size:.98rem}
+  .dropzone{
+    max-width:720px;margin:0 auto;border:2px dashed var(--line);border-radius:16px;
+    padding:clamp(36px,6vw,64px);text-align:center;transition:all .2s;cursor:pointer;
+  }
+  .dropzone:hover,.dropzone.drag{border-color:var(--accent);background:var(--bg-soft)}
+  .dropzone .ico{font-size:2.4rem;margin-bottom:14px}
+  .dropzone .big{font-family:var(--display);font-size:1.5rem;margin-bottom:6px}
+  .dropzone .sm{color:var(--muted);font-size:.85rem}
+  .dropzone input{display:none}
+  .add-actions{max-width:720px;margin:16px auto 0;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .add-note{color:var(--muted);font-size:.78rem;line-height:1.5}
+  .btn-clear{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;
+    padding:8px 16px;cursor:pointer;transition:all .2s;
+  }
+  .btn-clear:hover{color:var(--text);border-color:var(--muted)}
+
+  /* ---------- LIGHTBOX ---------- */
+  .lb{position:fixed;inset:0;z-index:60;background:rgba(8,8,11,.96);display:none;align-items:center;justify-content:center}
+  .lb.open{display:flex}
+  .lb img{max-width:92vw;max-height:82vh;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .lb-cap{position:absolute;bottom:26px;left:0;right:0;text-align:center}
+  .lb-cap .t{font-family:var(--display);font-size:1.6rem}
+  .lb-cap .g{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-top:4px}
+  .lb-btn{
+    position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--text);
+    font-size:2.4rem;cursor:pointer;padding:20px;opacity:.6;transition:opacity .2s;font-family:var(--body)
+  }
+  .lb-btn:hover{opacity:1}
+  .lb-prev{left:2vw}.lb-next{right:2vw}
+  .lb-close{position:absolute;top:20px;right:24px;font-size:1.8rem;background:transparent;border:none;color:var(--text);cursor:pointer;opacity:.6;transition:opacity .2s}
+  .lb-close:hover{opacity:1}
+  .lb-count{position:absolute;top:26px;left:24px;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;color:var(--muted)}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line);padding:40px 0;text-align:center}
+  footer .mono{display:block}
+  footer a{color:var(--accent);text-decoration:none}
+
+  @media(max-width:600px){
+    .masonry{columns:2 150px;column-gap:12px}
+    .tile{margin-bottom:12px}
+    .lb-btn{font-size:1.8rem;padding:12px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">Habu<em>.</em>gallery</a>
+    <div class="nav-right">
+      <a href="#add">Add photos</a>
+      <a href="https://x.com/nyang_party" target="_blank" rel="noopener">X</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <span class="mono">Photography · Live &amp; Portrait</span>
+    <h1>撮った瞬間を、<em>展示する</em>。</h1>
+    <p>ライブやポートレートで切り取った一枚を並べたギャラリーです。写真を選ぶと拡大して見られます。</p>
+  </section>
+
+  <div class="wrap">
+    <div class="toolbar" id="filters"></div>
+    <div class="masonry" id="masonry"></div>
+    <div class="empty" id="empty" hidden>該当する写真がありません。</div>
+  </div>
+
+  <!-- ============ ADD PHOTOS (client-side) ============ -->
+  <section id="add">
+    <div class="wrap">
+      <div class="add-head">
+        <h2>写真を並べてみる</h2>
+        <p>手元の写真をここにドラッグ＆ドロップすると、このギャラリーに並べて見た目を試せます。</p>
+      </div>
+      <label class="dropzone" id="dropzone">
+        <div class="ico">↑</div>
+        <div class="big">写真をドロップ、またはクリックして選択</div>
+        <div class="sm">JPG / PNG / WebP に対応（複数選択できます）</div>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </label>
+      <div class="add-actions">
+        <div class="add-note">
+          ※ ここで追加した写真は<strong>あなたのブラウザ内だけ</strong>に保存されます（サーバーには送られず、他の人には見えません）。<br>
+          常設で公開したい写真は <code>photos.js</code> に登録してください。
+        </div>
+        <button class="btn-clear" id="clearBtn" hidden>追加した写真を消す</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">© <span id="yr"></span> Habu — <a href="https://kanami-habu1122.github.io/portfolio">Portfolio へ戻る</a></span>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" aria-hidden="true">
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-close" id="lbClose" aria-label="閉じる">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="前へ">‹</button>
+  <img id="lbImg" alt="">
+  <button class="lb-btn lb-next" id="lbNext" aria-label="次へ">›</button>
+  <div class="lb-cap"><div class="t" id="lbTitle"></div><div class="g" id="lbTag"></div></div>
+</div>
+
+<script src="photos.js"></script>
+<script>
+(function(){
+  "use strict";
+  var STORE_KEY = "habu-gallery-user-photos";
+
+  // 常設写真（photos.js）＋ ブラウザ保存の写真 を結合
+  function loadUserPhotos(){
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch(e){ return []; }
+  }
+  function saveUserPhotos(list){
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch(e){}
+  }
+
+  var base = (window.PHOTOS || []).slice();
+  var userPhotos = loadUserPhotos();
+  var current = [];        // 現在表示中の写真配列（フィルター適用後）
+  var activeTag = "all";
+
+  var masonry = document.getElementById("masonry");
+  var filtersEl = document.getElementById("filters");
+  var emptyEl = document.getElementById("empty");
+
+  function allPhotos(){ return base.concat(userPhotos); }
+
+  function uniqueTags(){
+    var set = {};
+    allPhotos().forEach(function(p){ if(p.tag) set[p.tag] = true; });
+    return Object.keys(set);
+  }
+
+  function renderFilters(){
+    var tags = ["all"].concat(uniqueTags());
+    filtersEl.innerHTML = "";
+    tags.forEach(function(tag){
+      var b = document.createElement("button");
+      b.className = "filter";
+      b.textContent = tag === "all" ? "All" : tag;
+      b.setAttribute("aria-pressed", tag === activeTag ? "true" : "false");
+      b.addEventListener("click", function(){ activeTag = tag; renderFilters(); renderGrid(); });
+      filtersEl.appendChild(b);
+    });
+    // フィルターが all だけなら隠す
+    filtersEl.style.display = tags.length <= 1 ? "none" : "flex";
+  }
+
+  function renderGrid(){
+    var list = allPhotos().filter(function(p){
+      return activeTag === "all" || p.tag === activeTag;
+    });
+    current = list;
+    masonry.innerHTML = "";
+    emptyEl.hidden = list.length > 0;
+
+    list.forEach(function(p, i){
+      var tile = document.createElement("figure");
+      tile.className = "tile";
+      var img = document.createElement("img");
+      img.loading = "lazy";
+      img.src = p.src;
+      img.alt = p.title || "photo";
+      tile.appendChild(img);
+
+      if(p.title || p.tag){
+        var cap = document.createElement("figcaption");
+        cap.className = "cap";
+        cap.innerHTML = (p.tag ? '<span class="g">'+esc(p.tag)+'</span>' : '') +
+                        (p.title ? '<div class="t">'+esc(p.title)+'</div>' : '');
+        tile.appendChild(cap);
+      }
+      if(p.user){
+        var badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = "your photo";
+        tile.appendChild(badge);
+      }
+      tile.addEventListener("click", function(){ openLightbox(i); });
+      masonry.appendChild(tile);
+      // reveal
+      requestAnimationFrame(function(){
+        setTimeout(function(){ tile.classList.add("in"); }, Math.min(i,12) * 45);
+      });
+    });
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  /* ---------- Lightbox ---------- */
+  var lb = document.getElementById("lb");
+  var lbImg = document.getElementById("lbImg");
+  var lbTitle = document.getElementById("lbTitle");
+  var lbTag = document.getElementById("lbTag");
+  var lbCount = document.getElementById("lbCount");
+  var lbIndex = 0;
+
+  function openLightbox(i){
+    lbIndex = i; showLightbox(); lb.classList.add("open"); lb.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeLightbox(){
+    lb.classList.remove("open"); lb.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+  }
+  function step(d){ lbIndex = (lbIndex + d + current.length) % current.length; showLightbox(); }
+  function showLightbox(){
+    var p = current[lbIndex]; if(!p) return;
+    lbImg.src = p.src; lbImg.alt = p.title || "photo";
+    lbTitle.textContent = p.title || "";
+    lbTag.textContent = p.tag || "";
+    lbCount.textContent = (lbIndex+1) + " / " + current.length;
+  }
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbPrev").addEventListener("click", function(e){ e.stopPropagation(); step(-1); });
+  document.getElementById("lbNext").addEventListener("click", function(e){ e.stopPropagation(); step(1); });
+  lb.addEventListener("click", function(e){ if(e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", function(e){
+    if(!lb.classList.contains("open")) return;
+    if(e.key === "Escape") closeLightbox();
+    else if(e.key === "ArrowLeft") step(-1);
+    else if(e.key === "ArrowRight") step(1);
+  });
+
+  /* ---------- Add photos (drag & drop) ---------- */
+  var dropzone = document.getElementById("dropzone");
+  var fileInput = document.getElementById("fileInput");
+  var clearBtn = document.getElementById("clearBtn");
+
+  function updateClearBtn(){ clearBtn.hidden = userPhotos.length === 0; }
+
+  function handleFiles(files){
+    var imgs = Array.prototype.filter.call(files, function(f){ return /^image\//.test(f.type); });
+    if(!imgs.length) return;
+    var remaining = imgs.length;
+    imgs.forEach(function(file){
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        userPhotos.push({
+          src: ev.target.result,      // data URL
+          title: file.name.replace(/\.[^.]+$/, ""),
+          tag: "your photo",
+          user: true
+        });
+        remaining--;
+        if(remaining === 0){
+          saveUserPhotos(userPhotos);
+          activeTag = "all";
+          renderFilters(); renderGrid(); updateClearBtn();
+          document.getElementById("top").scrollIntoView({behavior:"smooth"});
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  fileInput.addEventListener("change", function(){ handleFiles(this.files); this.value = ""; });
+  ["dragenter","dragover"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(function(ev){
+    dropzone.addEventListener(ev, function(e){ e.preventDefault(); dropzone.classList.remove("drag"); });
+  });
+  dropzone.addEventListener("drop", function(e){
+    if(e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+  });
+  clearBtn.addEventListener("click", function(){
+    userPhotos = [];
+    saveUserPhotos(userPhotos);
+    renderFilters(); renderGrid(); updateClearBtn();
+  });
+
+  /* ---------- init ---------- */
+  document.getElementById("yr").textContent = new Date().getFullYear();
+  renderFilters();
+  renderGrid();
+  updateClearBtn();
+})();
+</script>
+</body>
+</html>
