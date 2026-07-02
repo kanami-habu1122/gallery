@@ -90,7 +90,9 @@
   #add{border-top:1px solid var(--line);padding:clamp(50px,8vw,90px) 0}
   .add-head{text-align:center;margin-bottom:34px}
   .add-head h2{font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,5vw,3rem);line-height:1.2}
-  .add-head p{color:var(--muted);max-width:56ch;margin:14px auto 0;font-size:.98rem}
+  .add-head p{color:var(--muted);max-width:34em;margin:14px auto 0;font-size:.9rem;line-height:1.9;text-wrap:pretty;line-break:strict}
+  .add-head p br{display:none}
+  @media(min-width:620px){.add-head p br{display:inline}}
   .dropzone{
     max-width:720px;margin:0 auto;border:2px dashed var(--line);border-radius:16px;
     padding:clamp(36px,6vw,64px);text-align:center;transition:all .2s;cursor:pointer;
@@ -170,7 +172,7 @@
     <div class="wrap">
       <div class="add-head">
         <h2>写真を並べてみる</h2>
-        <p>手元の写真をここにドラッグ＆ドロップすると、このギャラリーに並べて見た目を試せます。</p>
+        <p>手元の写真をここにドラッグ＆ドロップすると、<br>このギャラリーに並べて見た目を試せます。</p>
       </div>
       <label class="dropzone" id="dropzone">
         <div class="ico">↑</div>
@@ -180,8 +182,7 @@
       </label>
       <div class="add-actions">
         <div class="add-note">
-          ※ ここで追加した写真は<strong>あなたのブラウザ内だけ</strong>に保存されます（サーバーには送られず、他の人には見えません）。<br>
-          常設で公開したい写真は <code>photos.js</code> に登録してください。
+          ※ ここで追加した写真は<strong>あなたのブラウザ内だけ</strong>に保存されます（サーバーには送られず、他の人には見えません）。
         </div>
         <button class="btn-clear" id="clearBtn" hidden>追加した写真を消す</button>
       </div>
