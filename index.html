@@ -51,9 +51,11 @@
   .hero .mono{display:block;margin-bottom:20px}
   .hero h1{font-family:var(--display);font-weight:600;font-size:clamp(2rem,8vw,5.8rem);line-height:1.14;letter-spacing:.02em;overflow-wrap:break-word}
   .hero h1 em{color:var(--accent);font-style:normal}
+  /* モバイルでは見出しを「、」で改行して2行に固定（1行だと画面幅を超えるため） */
+  .hero-br{display:inline}
   .hero p{max-width:30em;margin:24px auto 0;color:var(--muted);font-size:clamp(.82rem,1.6vw,.95rem);line-height:1.9;text-wrap:pretty;line-break:strict}
   .hero p br{display:none}
-  @media(min-width:620px){.hero p br{display:inline}}
+  @media(min-width:620px){.hero p br{display:inline};.hero-br{display:none}}
 
   /* ---------- FILTERS ---------- */
   .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:0 auto clamp(30px,5vw,56px);padding-top:8px}
@@ -148,6 +150,7 @@
   @media(max-width:600px){
     .hero{padding:clamp(40px,9vw,60px) 0 clamp(28px,5vw,40px)}
     .hero h1{font-size:clamp(1.8rem,7.6vw,2.6rem)}
+    .hero p{max-width:100%;font-size:.8rem;line-break:auto}
     .masonry{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px;gap:10px}
     .lb-btn{font-size:1.8rem;padding:12px}
   }
@@ -168,7 +171,7 @@
 <main id="top">
   <section class="hero wrap">
     <span class="mono">Photography · Stage &amp; Event</span>
-    <h1>撮った瞬間を、<em>展示する</em>。</h1>
+    <h1>撮った瞬間を、<br class="hero-br"><em>展示する</em>。</h1>
     <p>ライブやサイン会で切り取った一枚を並べたギャラリーです。<br>写真を選ぶと拡大して見られます。</p>
   </section>
 
