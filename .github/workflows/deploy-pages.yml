@@ -1,0 +1,53 @@
+name: Deploy to GitHub Pages
+
+# The site is fully static (no Jekyll/Liquid needed), so we publish it via
+# GitHub Actions instead of the built-in "deploy from a branch" Jekyll build,
+# which was failing intermittently ("Page build failed."). Only the files the
+# site actually serves are published; the multi-MB originals in photos/ are
+# excluded (cache/ holds the optimized versions used by the page).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage published files (exclude originals and build files)
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='_site' \
+            --exclude='photos' \
+            --exclude='node_modules' \
+            --exclude='scripts' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='_config.yml' \
+            --exclude='README.md' \
+            ./ _site/
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
