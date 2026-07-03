@@ -232,6 +232,20 @@
 
   function allPhotos(){ return base.concat(userPhotos); }
 
+  // 読み込みごとに並び順をランダムにする（Fisher–Yates シャッフル）。
+  // ページ読み込み時と写真の追加/削除時だけ order を作り直し、
+  // フィルター切り替えでは並びを保つ（毎回シャッフルすると見づらいため）。
+  var ordered = [];
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function buildOrder(){ ordered = shuffle(allPhotos()); }
+
   // 常に表示しておくカテゴリ（写真が0枚でもボタンを出す）
   var FIXED_TAGS = ["Stage", "Signing", "Other"];
 
@@ -260,7 +274,7 @@
   }
 
   function renderGrid(){
-    var list = allPhotos().filter(function(p){
+    var list = ordered.filter(function(p){
       return activeTag === "all" || p.tag === activeTag;
     });
     current = list;
@@ -390,6 +404,7 @@
         if(remaining === 0){
           saveUserPhotos(userPhotos);
           activeTag = "all";
+          buildOrder();
           renderFilters(); renderGrid(); updateClearBtn();
           document.getElementById("top").scrollIntoView({behavior:"smooth"});
         }
@@ -411,11 +426,13 @@
   clearBtn.addEventListener("click", function(){
     userPhotos = [];
     saveUserPhotos(userPhotos);
+    buildOrder();
     renderFilters(); renderGrid(); updateClearBtn();
   });
 
   /* ---------- init ---------- */
   document.getElementById("yr").textContent = new Date().getFullYear();
+  buildOrder();
   renderFilters();
   renderGrid();
   updateClearBtn();
