@@ -54,8 +54,9 @@
   /* モバイルでは見出しを「、」で改行して2行に固定（1行だと画面幅を超えるため） */
   .hero-br{display:inline}
   .hero p{max-width:30em;margin:24px auto 0;color:var(--muted);font-size:clamp(.82rem,1.6vw,.95rem);line-height:1.9;text-wrap:pretty;line-break:strict}
-  .hero p br{display:none}
-  @media(min-width:620px){.hero p br{display:inline};.hero-br{display:none}}
+  /* 文の区切り（。）で改行して、フレーズが途中で切れないようにする（モバイル含む） */
+  .hero p br{display:inline}
+  @media(min-width:620px){.hero-br{display:none}}
 
   /* ---------- FILTERS ---------- */
   .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:0 auto clamp(30px,5vw,56px);padding-top:8px}
