@@ -29,6 +29,7 @@
     font-family:var(--body);
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;   /* 見出し等がはみ出しても横スクロールさせない */
   }
   a{color:inherit}
   img{display:block;max-width:100%}
@@ -48,7 +49,7 @@
   /* ---------- HERO ---------- */
   .hero{padding:clamp(60px,10vw,130px) 0 clamp(36px,5vw,64px);text-align:center}
   .hero .mono{display:block;margin-bottom:20px}
-  .hero h1{font-family:var(--display);font-weight:600;font-size:clamp(2.6rem,8vw,5.8rem);line-height:1.12;letter-spacing:.02em}
+  .hero h1{font-family:var(--display);font-weight:600;font-size:clamp(2rem,8vw,5.8rem);line-height:1.14;letter-spacing:.02em;overflow-wrap:break-word}
   .hero h1 em{color:var(--accent);font-style:normal}
   .hero p{max-width:30em;margin:24px auto 0;color:var(--muted);font-size:clamp(.82rem,1.6vw,.95rem);line-height:1.9;text-wrap:pretty;line-break:strict}
   .hero p br{display:none}
@@ -145,6 +146,8 @@
   footer a{color:var(--accent);text-decoration:none}
 
   @media(max-width:600px){
+    .hero{padding:clamp(40px,9vw,60px) 0 clamp(28px,5vw,40px)}
+    .hero h1{font-size:clamp(1.8rem,7.6vw,2.6rem)}
     .masonry{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px;gap:10px}
     .lb-btn{font-size:1.8rem;padding:12px}
   }
