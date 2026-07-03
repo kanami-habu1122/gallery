@@ -5,9 +5,12 @@
 # cache/ from them in CI) but must NOT be published — including ~85MB of unused
 # originals made the Pages deploy time out ("Timeout reached, aborting!").
 # Excluding them keeps the published artifact small and the deploy fast.
+# NOTE: use a trailing slash on "photos/" so it matches the directory ONLY.
+# Bare "photos" also matches the file "photos.js" (prefix match) and would
+# drop the photo list from the published site, leaving the gallery empty.
 exclude:
-  - photos
-  - scripts
+  - photos/
+  - scripts/
   - package.json
   - package-lock.json
   - node_modules
