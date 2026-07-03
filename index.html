@@ -64,15 +64,24 @@
   .filter:hover{color:var(--text);border-color:var(--muted)}
   .filter[aria-pressed="true"]{color:var(--bg);background:var(--accent);border-color:var(--accent)}
 
-  /* ---------- MASONRY ---------- */
-  .masonry{columns:4 300px;column-gap:20px;padding-bottom:60px}
+  /* ---------- GRID ---------- */
+  .masonry{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    grid-auto-rows:240px;
+    grid-auto-flow:dense;
+    gap:16px;
+    padding-bottom:60px;
+  }
   .tile{
-    break-inside:avoid;margin:0 0 20px;position:relative;overflow:hidden;border-radius:6px;
+    position:relative;overflow:hidden;border-radius:6px;
     cursor:pointer;background:var(--bg-soft);
     opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;
   }
   .tile.in{opacity:1;transform:none}
-  .tile img{width:100%;height:auto;transition:transform .6s ease,filter .6s ease;filter:saturate(.92)}
+  /* 一部のタイルを大きく（2×2）表示して変化をつける */
+  .tile.big{grid-column:span 2;grid-row:span 2}
+  .tile img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease,filter .6s ease;filter:saturate(.92)}
   .tile:hover img{transform:scale(1.05);filter:saturate(1.08)}
   .tile .cap{
     position:absolute;inset:auto 0 0 0;padding:26px 16px 14px;
@@ -136,8 +145,7 @@
   footer a{color:var(--accent);text-decoration:none}
 
   @media(max-width:600px){
-    .masonry{columns:2 150px;column-gap:12px}
-    .tile{margin-bottom:12px}
+    .masonry{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px;gap:10px}
     .lb-btn{font-size:1.8rem;padding:12px}
   }
 </style>
@@ -236,6 +244,7 @@
   // ページ読み込み時と写真の追加/削除時だけ order を作り直し、
   // フィルター切り替えでは並びを保つ（毎回シャッフルすると見づらいため）。
   var ordered = [];
+  var featured = [];   // 大きく（2×2）表示するタイル
   function shuffle(arr){
     var a = arr.slice();
     for(var i = a.length - 1; i > 0; i--){
@@ -244,7 +253,16 @@
     }
     return a;
   }
-  function buildOrder(){ ordered = shuffle(allPhotos()); }
+  function buildOrder(){
+    ordered = shuffle(allPhotos());
+    // 全体に散らばるように 2〜3 枚を大きめタイルに選ぶ（内容はランダム）
+    featured = [];
+    var len = ordered.length;
+    var n = Math.min(3, Math.floor(len / 4));
+    for(var k = 0; k < n; k++){
+      featured.push(ordered[Math.floor(len * (k + 0.5) / n)]);
+    }
+  }
 
   // 常に表示しておくカテゴリ（写真が0枚でもボタンを出す）
   var FIXED_TAGS = ["Stage", "Signing", "Other"];
@@ -284,6 +302,7 @@
     list.forEach(function(p, i){
       var tile = document.createElement("figure");
       tile.className = "tile";
+      if(featured.indexOf(p) !== -1) tile.classList.add("big");
       var img = document.createElement("img");
       img.loading = "lazy";
       img.src = p.thumb || p.src;   // 一覧は軽いサムネイルを使う
